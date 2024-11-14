@@ -49,3 +49,19 @@ size_t	ft_strlen(const char *str)
 		i++;
 	return (i);
 }
+
+char	*ft_strchr(const char *s, int c)
+{
+	unsigned char	res;
+
+	res = (unsigned char)c;
+	while (*s != '\0')
+	{
+		if ((unsigned char)*s == res)
+			return ((char *)s);
+		s++;
+	}
+	if (res == '\0')
+		return ((char *)s + ft_strlen(s));
+	return (NULL);
+}
