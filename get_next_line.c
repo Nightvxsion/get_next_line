@@ -43,3 +43,18 @@ char	*ft_nextline(char *old)
 	free(old);
 	return(line);
 }
+
+char	*ft_line(char *buffer)
+{
+	char	*new;
+	int		i;
+
+	i = 0;
+	if (!buffer)
+		return (NULL);
+	while(buffer[i] && buffer[i] != '\n')
+		i++;
+	new = malloc(i + 2 * sizeof(char));
+	while(buffer[i] && buffer[i] != '\n')
+
+}
