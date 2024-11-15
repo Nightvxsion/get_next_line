@@ -36,9 +36,7 @@ char	*ft_nextline(char *old)
 	j = 0;
 	while (old[i] && old[i] != '\n')
 		i++;
-	if (!old)
-		return (NULL);
-	line = malloc((ft_strlen(old) - i + 1) * sizeof(char));
+	line = ft_calloc((ft_strlen(old) - i + 1), sizeof(char));
 	if (!line)
 		return (NULL);
 	i++;
@@ -59,10 +57,9 @@ char	*ft_complete_line(char *buffer)
 		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	new = malloc((i + 2) * sizeof(char));
+	new = ft_calloc(i + 2, sizeof(char));
 	if (!new)
 		return (NULL);
-	i = 0;
 	while (buffer[i] && buffer[i] != '\n')
 	{
 		new[i] = buffer[i];
@@ -79,11 +76,11 @@ char	*ft_read_fd(int fd, char *all)
 	char	*buffer;
 	int		read_bytes;
 
-	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!buffer)
 		return (NULL);
-	read_bytes = 1;
-	while (read_bytes > 0)
+	read_bytes = 0;
+	while (read_bytes)
 	{
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (read_bytes == -1)
@@ -91,7 +88,7 @@ char	*ft_read_fd(int fd, char *all)
 			free(buffer);
 			return (NULL);
 		}
-		buffer[read_bytes] = '\0';
+		buffer[read_bytes] = 0;
 		all = ft_joinfree(all, buffer);
 		if (ft_strchr(buffer, '\n'))
 			break ;
@@ -105,7 +102,7 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0))
+	if (fd < 0 || BUFFER_SIZE < 0 || read(fd, 0, 0))
 		return (NULL);
 	buffer = ft_read_fd(fd, buffer);
 	if (!buffer)
