@@ -16,12 +16,9 @@ char	*ft_joinfree(char *buffer, char *new)
 {
 	char	*result;
 
-	result = ft_strjoin(buffer, new);
 	if (!result)
-	{
-		free(buffer);
 		return (NULL);
-	}
+	result = ft_strjoin(buffer, new);
 	free(buffer);
 	return (result);
 }
@@ -33,13 +30,18 @@ char	*ft_nextline(char *old)
 	char	*line;
 
 	i = 0;
-	j = 0;
 	while (old[i] && old[i] != '\n')
 		i++;
-	line = ft_calloc((ft_strlen(old) - i + 1), sizeof(char));
+	if (!old[i])
+	{
+		free(old);
+		return (NULL);
+	}
+	line = ft_calloc((ft_strlen(old) - i), sizeof(char));
 	if (!line)
 		return (NULL);
 	i++;
+	j = 0;
 	while (old[i])
 		line[j++] = old[i++];
 	line[j] = '\0';
@@ -53,13 +55,14 @@ char	*ft_complete_line(char *buffer)
 	char	*new;
 
 	i = 0;
-	if (!buffer)
+	if (!buffer || !buffer[i])
 		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
 	new = ft_calloc(i + 2, sizeof(char));
 	if (!new)
 		return (NULL);
+	i = 0;
 	while (buffer[i] && buffer[i] != '\n')
 	{
 		new[i] = buffer[i];
@@ -79,8 +82,8 @@ char	*ft_read_fd(int fd, char *all)
 	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!buffer)
 		return (NULL);
-	read_bytes = 0;
-	while (read_bytes)
+	read_bytes = 1;
+	while (read_bytes > 0)
 	{
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (read_bytes == -1)
@@ -102,20 +105,35 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE < 0 || read(fd, 0, 0))
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	buffer = ft_read_fd(fd, buffer);
 	if (!buffer)
-	{
-		free(buffer);
 		return (NULL);
-	}
 	line = ft_complete_line(buffer);
-	if (!line)
-	{
-		free(buffer);
-		return (NULL);
-	}
 	buffer = ft_nextline(buffer);
 	return (line);
+}
+int	main(void)
+{
+	char	*line;
+	int		i;
+	int		fd1;
+
+	fd1 = open("./tests/que.txt", O_RDONLY);
+	if (fd1 < 0)
+	{
+		printf("ERROR OPENING!\n");
+		return (1);
+	}
+	i = 1;
+	while (i < 7)
+	{
+		line = get_next_line(fd1);
+		printf("line [%02d]: %s\n", i, line);
+		free(line);
+		i++;
+	}
+	close(fd1);
+	return (0);
 }

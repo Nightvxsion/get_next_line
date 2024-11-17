@@ -79,7 +79,6 @@ void	*ft_calloc(size_t item, size_t size)
 		return (total);
 	}
 }
-
 void	ft_bzero(void *s, size_t n)
 {
 	unsigned char	*p;
