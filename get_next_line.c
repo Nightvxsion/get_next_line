@@ -106,6 +106,8 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line = ft_complete_line(buffer);
 	buffer = ft_nextline(buffer);
+	if (!buffer)
+		free(buffer);
 	return (line);
 }
 /*int	main(void)
