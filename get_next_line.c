@@ -20,7 +20,10 @@ char	*ft_joinfree(char *buffer, char *new)
 		return (NULL);
 	result = ft_strjoin(buffer, new);
 	if (!result)
+	{
+		free(buffer);
 		return (NULL);
+	}
 	free(buffer);
 	return (result);
 }
@@ -31,14 +34,17 @@ char	*ft_nextline(char *old)
 	int		j;
 	char	*line;
 
-	i = 0;
-	if (!old[i])
+	if (!old)
 		return (NULL);
+	i = 0;
 	while (old[i] && old[i] != '\n')
 		i++;
-	line = ft_calloc((ft_strlen(old) - i), sizeof(char));
+	line = malloc((ft_strlen(old) - i) * sizeof(char));
 	if (!line)
+	{
+		free(old);
 		return (NULL);
+	}
 	i++;
 	j = 0;
 	while (old[i])
@@ -61,7 +67,7 @@ char	*ft_complete_line(char *buffer)
 	}
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	new = ft_calloc(i + 2, sizeof(char));
+	new = malloc((i + 2) * sizeof(char));
 	if (!new)
 		return (NULL);
 	i = 0;
@@ -81,26 +87,22 @@ char	*ft_read_fd(int fd, char *all)
 	char	*buffer;
 	int		read_bytes;
 
-	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buffer)
 		return (NULL);
 	while (1)
 	{
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (read_bytes <= 0)
-			break ;
+			return (all);
 		buffer[read_bytes] = '\0';
 		all = ft_joinfree(all, buffer);
-		if (!all)
+		if (!all || ft_strchr(buffer, '\n'))
 		{
-			free(buffer);
+			free(all);
 			return (NULL);
 		}
-		if (ft_strchr(buffer, '\n'))
-			break ;
 	}
-	if (read_bytes == -1)
-		return (NULL);
 	free(buffer);
 	return (all);
 }

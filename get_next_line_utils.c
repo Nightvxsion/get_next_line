@@ -66,20 +66,6 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-void	*ft_calloc(size_t item, size_t size)
-{
-	void	*total;
-
-	total = malloc(item * size);
-	if (!total)
-		return (NULL);
-	else
-	{
-		ft_bzero(total, (item * size));
-		return (total);
-	}
-}
-
 void	ft_bzero(void *s, size_t n)
 {
 	unsigned char	*p;
@@ -93,5 +79,19 @@ void	ft_bzero(void *s, size_t n)
 	{
 		p[i] = 0;
 		i++;
+	}
+}
+
+void	*ft_calloc(size_t item, size_t size)
+{
+	void	*total;
+
+	total = malloc(item * size);
+	if (!total)
+		return (NULL);
+	else
+	{
+		ft_bzero(total, (item * size));
+		return (total);
 	}
 }
