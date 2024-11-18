@@ -16,14 +16,7 @@ char	*ft_joinfree(char *buffer, char *new)
 {
 	char	*result;
 
-	if (!buffer || !new)
-		return (NULL);
 	result = ft_strjoin(buffer, new);
-	if (!result)
-	{
-		free(buffer);
-		return (NULL);
-	}
 	free(buffer);
 	return (result);
 }
@@ -34,22 +27,19 @@ char	*ft_nextline(char *old)
 	int		j;
 	char	*line;
 
-	if (!old)
-		return (NULL);
 	i = 0;
 	while (old[i] && old[i] != '\n')
 		i++;
-	line = malloc((ft_strlen(old) - i) * sizeof(char));
-	if (!line)
+	if (!old[i])
 	{
 		free(old);
 		return (NULL);
 	}
+	line = ft_calloc((ft_strlen(old) - i + 1), sizeof(char));
 	i++;
 	j = 0;
 	while (old[i])
 		line[j++] = old[i++];
-	line[j] = '\0';
 	free(old);
 	return (line);
 }
@@ -60,25 +50,19 @@ char	*ft_complete_line(char *buffer)
 	char	*new;
 
 	i = 0;
-	if (!buffer || !buffer[i])
-	{
-		free(buffer);
+	if (!buffer[i])
 		return (NULL);
-	}
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	new = malloc((i + 2) * sizeof(char));
-	if (!new)
-		return (NULL);
+	new = ft_calloc(i + 2, sizeof(char));
 	i = 0;
 	while (buffer[i] && buffer[i] != '\n')
 	{
 		new[i] = buffer[i];
 		i++;
 	}
-	if (buffer[i] == '\n')
+	if (buffer[i] && buffer[i] == '\n')
 		new[i++] = '\n';
-	new[i] = '\0';
 	return (new);
 }
 
@@ -87,21 +71,24 @@ char	*ft_read_fd(int fd, char *all)
 	char	*buffer;
 	int		read_bytes;
 
-	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!all)
+		all = ft_calloc(1, 1);
+	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!buffer)
 		return (NULL);
-	while (1)
+	read_bytes = 1;
+	while (read_bytes > 0)
 	{
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
-		if (read_bytes <= 0)
-			return (all);
-		buffer[read_bytes] = '\0';
-		all = ft_joinfree(all, buffer);
-		if (!all || ft_strchr(buffer, '\n'))
+		if (read_bytes == -1)
 		{
-			free(all);
+			free(buffer);
 			return (NULL);
 		}
+		buffer[read_bytes] = 0;
+		all = ft_joinfree(all, buffer);
+		if (ft_strchr(buffer, '\n'))
+			break ;
 	}
 	free(buffer);
 	return (all);
@@ -112,7 +99,7 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 		return (NULL);
 	buffer = ft_read_fd(fd, buffer);
 	if (!buffer)
