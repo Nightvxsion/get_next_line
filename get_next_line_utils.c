@@ -86,7 +86,10 @@ void	*ft_calloc(size_t item, size_t size)
 		return (NULL);
 	total = malloc(item * size);
 	if (!total)
+	{
+		free(total);
 		return (NULL);
+	}
 	ft_bzero(total, (item * size));
 	return (total);
 }
