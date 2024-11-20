@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marcgar2 <marcgar2@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:48 by marcgar2          #+#    #+#             */
-/*   Updated: 2024/11/20 20:31:32 by marcgar2         ###   ########.fr       */
+/*   Updated: 2024/11/20 20:39:45 by marcgar2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static char	*ft_joinfree(char *buffer, char *new)
 {
@@ -113,23 +113,23 @@ static char	*ft_read_fd(int fd, char *all)
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
+	static char	*buffer[MAX_FD];
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE < 1)
+	if (fd < 0 || BUFFER_SIZE < 1 || fd >= MAX_FD)
 		return (NULL);
-	buffer = ft_read_fd(fd, buffer);
-	if (!buffer)
+	buffer[fd] = ft_read_fd(fd, buffer[fd]);
+	if (!buffer[fd])
 		return (NULL);
-	line = ft_complete_line(buffer);
+	line = ft_complete_line(buffer[fd]);
 	if (line == NULL)
 	{
-		free(buffer);
+		free(buffer[fd]);
 		free(line);
-		buffer = NULL;
+		buffer[fd] = NULL;
 		return (NULL);
 	}
-	buffer = ft_nextline(buffer);
+	buffer[fd] = ft_nextline(buffer[fd]);
 	return (line);
 }
 
